@@ -1,12 +1,11 @@
 To access
-Website:     http://sprint-[ts].ddev.local:8080/
-             https://sprint-[ts].ddev.local:8443/
-             (User:admin Pass:admin)
+Website:    http://sprint-[ts].ddev.local:8080/
+            https://sprint-[ts].ddev.local:8443/
+            (User:admin Pass:admin)
 
-Mailhog:     http://sprint-[ts].ddev.local:8025/
-phpMyAdmin:  http://sprint-[ts].ddev.local:8036/
-Chat:        https://drupal.org/chat to join Drupal Slack or drupalchat.eu!
-
+Mailhog:    http://sprint-[ts].ddev.local:8025/
+phpMyAdmin: http://sprint-[ts].ddev.local:8036/
+Chat:       https://drupal.org/chat to join Drupal Slack or DrupalChat.me
 
 Common ddev commands to know:
 

@@ -37,7 +37,7 @@ ${GREEN}
 # It does the following:
 #  -Install Drud Technology's ddev local development tool
 #  -Copy required components to ~/sprint
-#  -Pre-loads docker images for the sprint toolkit:
+#  -Pre-loads docker images for the sprint toolkit
 #
 ####
 ${RESET}"
