@@ -12,7 +12,7 @@ services:
       - VIRTUAL_HOST=$DDEV_HOSTNAME
       - HTTP_EXPOSE=8000
     volumes:
-      - ../drupal8:/workspace:rw
+      - ../:/workspace:rw
     labels:
       # These labels ensure this service is discoverable by ddev.
       com.ddev.site-name: ${DDEV_SITENAME}
