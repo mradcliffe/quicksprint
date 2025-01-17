@@ -6,7 +6,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-SPRINT_BRANCH=9.3.x
+SPRINT_BRANCH=11.x
 
 RED='\033[31m'
 GREEN='\033[32m'
@@ -31,24 +31,28 @@ else
     exit 1
 fi
 
-cd "${SPRINTNAME}/drupal"
 echo "Using ddev version $(ddev version| awk '/^cli/ { print $2}') from $(which ddev)"
 
-ddev config --docroot . --project-type drupal9 --php-version=7.4 --composer-version=2 --mariadb-version=10.3 --http-port=8080 --https-port=8443 --project-name="sprint-${TIMESTAMP}"
-
-ddev config global --instrumentation-opt-in=false >/dev/null
 printf "${YELLOW}Configuring your fresh Drupal instance. This takes a few minutes.${RESET}\n"
-printf "${YELLOW}Running ddev start...YOU MAY BE ASKED for your sudo password to add a hostname to /etc/hosts${RESET}\n"
-ddev start || (printf "${RED}ddev start failed.${RESET}" && exit 101)
-printf "${YELLOW}Running git fetch && git checkout origin/${SPRINT_BRANCH}.${RESET}...\n"
-ddev exec "(git fetch && git checkout 'origin/${SPRINT_BRANCH}') || (echo 'ddev exec...git checkout failed' && exit 102)"
-printf "${YELLOW}Running 'ddev composer install'${RESET}...\n"
-ddev composer install
-ddev exec "git checkout /var/www/html/composer.*"
 
-printf "${YELLOW}Running 'drush8 si' to install drupal.${RESET}...\n"
-ddev exec "drush8 si --yes standard --account-pass=admin --db-url=mysql://db:db@db/db --site-name='Drupal Contribution Time'"
-printf "${RESET}"
+cd "${SPRINTNAME}/drupalpod"
+ddev config --project-name="${SPRINTNAME}"
+
+# DrupalPod hacks.
+sed 's#time composer#time ddev composer#g' .gitpod/drupal/drupalpod-setup/drupal_setup_core.sh > .gitpod/drupal/drupalpod-setup/drupal_setup_core.sh.new
+mv .gitpod/drupal/drupalpod-setup/drupal_setup_core.sh.new .gitpod/drupal/drupalpod-setup/drupal_setup_core.sh
+chmod +x .gitpod/drupal/drupalpod-setup/drupal_setup_core.sh
+
+sed 's#\$(composer#\$(ddev composer#g' .gitpod/drupal/install-essential-packages.sh > .gitpod/drupal/install-essential-packages.sh.new
+mv .gitpod/drupal/install-essential-packages.sh.new .gitpod/drupal/install-essential-packages.sh
+chmod +x .gitpod/drupal/install-essential-packages.sh
+
+sed 's#vendor/bin/phpcs#ddev exec vendor/bin/phpcs#g' .gitpod/drupal/drupalpod-setup/drupalpod-setup.sh > .gitpod/drupal/drupalpod-setup/drupalpod-setup.sh.new
+mv .gitpod/drupal/drupalpod-setup/drupalpod-setup.sh.new .gitpod/drupal/drupalpod-setup/drupalpod-setup.sh
+chmod +x .gitpod/drupal/drupalpod-setup/drupalpod-setup.sh
+
+GITPOD_REPO_ROOT="$(pwd)" DP_PROJECT_NAME= DP_CORE_VERSION=$SPRINT_BRANCH DP_PROJECT_TYPE=project_core .gitpod/drupal/drupalpod-setup/drupalpod-setup.sh
+
 ddev describe
 
 printf "

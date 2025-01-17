@@ -5,7 +5,7 @@ set -o pipefail
 set -o nounset
 
 # Base checkout should be latest major-minor version branch
-SPRINT_BRANCH=9.3.x
+SPRINT_BRANCH=11.x
 
 # This makes git-bash actually try to create symlinks.
 # Use developer mode in Windows 10 so this doesn't require admin privs.
@@ -49,10 +49,10 @@ else
 fi
 
 SHACMD="sha256sum"
-LATEST_RELEASE=$(curl -L -s -H 'Accept: application/json' https://github.com/drud/ddev/releases/latest)
+LATEST_RELEASE=$(curl -L -s -H 'Accept: application/json' https://github.com/ddev/ddev/releases/latest)
 # The releases are returned in the format {"id":3622206,"tag_name":"hello-1.0.0.11",...}, we have to extract the tag_name.
 LATEST_VERSION="$(echo ${LATEST_RELEASE} |  jq -r .tag_name)"
-RELEASE_URL="https://github.com/drud/ddev/releases/download/$LATEST_VERSION"
+RELEASE_URL="https://github.com/ddev/ddev/releases/download/$LATEST_VERSION"
 
 echo "$LATEST_VERSION" >.ddev_version.txt
 
@@ -119,28 +119,21 @@ done
 
 pushd ${ddev_tarballs} >/dev/null
 # Download the ddev tarballs if necessary; check to make sure they all have correct sha256.
-for tarball in ddev_macos-amd64.$LATEST_VERSION.tar.gz ddev_macos-arm64.$LATEST_VERSION.tar.gz ddev_linux-amd64.$LATEST_VERSION.tar.gz ddev_linux-arm64.$LATEST_VERSION.tar.gz ddev_windows-amd64.$LATEST_VERSION.tar.gz ddev_windows_installer.$LATEST_VERSION.exe ddev_docker_images.arm64.$LATEST_VERSION.tar.xz ddev_docker_images.amd64.$LATEST_VERSION.tar.xz; do
-    shafile="${tarball}.sha256.txt"
-
-    if ! [ -f "${tarball}" -a -f "${shafile}" ] ; then
+for tarball in ddev_macos-amd64.$LATEST_VERSION.tar.gz ddev_macos-arm64.$LATEST_VERSION.tar.gz ddev_linux-amd64.$LATEST_VERSION.tar.gz ddev_linux-arm64.$LATEST_VERSION.tar.gz ddev_windows_amd64_installer.$LATEST_VERSION.exe ddev_windows_arm64_installer.$LATEST_VERSION.exe; do
+    if ! [ -f "${tarball}" ] ; then
         echo "Downloading ${tarball} ..."
         curl --fail -sSL "$RELEASE_URL/${tarball}" -o "${tarball}"
-        curl --fail -sSL "$RELEASE_URL/$shafile" -o "${shafile}"
     fi
-    ${SHACMD} -c "${shafile}"
 done
 popd >/dev/null
 
 # clone or refresh drupal clone
 mkdir -p sprint
-git clone --config core.autocrlf=false --config core.eol=lf --config core.filemode=false --quiet https://git.drupalcode.org/project/drupal.git ${STAGING_DIR}/sprint/drupal -b ${SPRINT_BRANCH}
-pushd ${STAGING_DIR}/sprint/drupal >/dev/null
-cp ${REPO_DIR}/example.gitignore ${STAGING_DIR}/sprint/drupal/.gitignore
+time git clone --config core.autocrlf=false --config core.eol=lf --config core.filemode=false --quiet https://git.drupalcode.org/project/drupalpod.git ${STAGING_DIR}/sprint/drupalpod -b main
 
-set -x
-composer install --quiet
-set +x
-
+mkdir -p ${STAGING_DIR}/sprint/drupalpod/repos
+pushd ${STAGING_DIR}/sprint/drupalpod/repos >/dev/null
+time git clone https://git.drupalcode.org/project/drupal.git -b $SPRINT_BRANCH
 popd >/dev/null
 
 # Copy licenses and COPYING notice.
