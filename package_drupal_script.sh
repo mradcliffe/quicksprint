@@ -17,7 +17,7 @@ export XZ_OPT=-9e
 # This script creates a package of artifacts that can then be used at a contribution event working on Drupal 8.
 # It assumes it's being run in the repository root.
 
-STAGING_DIR_NAME=drupal_sprint_package
+STAGING_DIR_NAME=drupal_contrib_package
 STAGING_DIR_BASE=~/tmp
 STAGING_DIR="$STAGING_DIR_BASE/$STAGING_DIR_NAME"
 REPO_DIR=$PWD
@@ -62,15 +62,15 @@ mkdir -p ${ddev_tarballs}
 
 # Remove anything in staging directory except ddev_tarballs.
 # Chmod as on Windows read-only stuff is often unremoveable
-chmod -R u+w ${STAGING_DIR}/{*.md,install.sh,sprint,start_sprint.sh} 2>/dev/null || true
-rm -rf ${STAGING_DIR}/{*.md,install.sh,sprint,start_sprint.sh}
+chmod -R u+w ${STAGING_DIR}/{*.md,install.sh,contrib-workspace,start.sh} 2>/dev/null || true
+rm -rf ${STAGING_DIR}/{*.md,install.sh,contrib-workspace,start.sh}
 # Remove anything in ddev_tarballs that is not the latest version
 if [ -d "${ddev_tarballs}" ]; then
      find "${ddev_tarballs}" -type f -not -name "*${LATEST_VERSION}*" -exec rm '{}' \;
 fi
 
 # Install the beginning items we need in the kit.
-cp -r .ddev_version.txt .quicksprint_release.txt sprint start_sprint.* *.md install.sh ${STAGING_DIR}
+cp -r .ddev_version.txt .quicksprint_release.txt contrib-workspace start.* *.md install.sh ${STAGING_DIR}
 
 
 # macOS/Darwin has a oneoff/weird shasum command.
@@ -128,26 +128,26 @@ done
 popd >/dev/null
 
 # clone or refresh drupal clone
-mkdir -p sprint
-time git clone --config core.autocrlf=false --config core.eol=lf --config core.filemode=false --quiet https://git.drupalcode.org/project/drupalpod.git ${STAGING_DIR}/sprint/drupalpod -b main
+mkdir -p contrib-workspace
+time git clone --config core.autocrlf=false --config core.eol=lf --config core.filemode=false --quiet https://git.drupalcode.org/project/drupalpod.git ${STAGING_DIR}/contrib-workspace/drupalpod -b main
 
-mkdir -p ${STAGING_DIR}/sprint/drupalpod/repos
-pushd ${STAGING_DIR}/sprint/drupalpod/repos >/dev/null
+mkdir -p ${STAGING_DIR}/contrib-workspace/drupalpod/repos
+pushd ${STAGING_DIR}/contrib-workspace/drupalpod/repos >/dev/null
 time git clone https://git.drupalcode.org/project/drupal.git -b $SPRINT_BRANCH
 popd >/dev/null
 
 # Copy licenses and COPYING notice.
 cp -r ${REPO_DIR}/licenses ${REPO_DIR}/COPYING "$STAGING_DIR/"
-cp ${REPO_DIR}/.quicksprint_release.txt $REPO_DIR/.ddev_version.txt "$STAGING_DIR/sprint"
+cp ${REPO_DIR}/.quicksprint_release.txt $REPO_DIR/.ddev_version.txt "$STAGING_DIR/contrib-workspace"
 
 cd ${STAGING_DIR}
 
-echo "Creating sprint.tar.xz..."
+echo "Creating contrib-workspace.tar.xz..."
 # Create tar.xz archive using xz command, so we can work on all platforms
 # Use --dereference to NOT use symlinks and not break windows tar.
-pushd sprint >/dev/null && tar -cJf ../sprint.tar.xz --dereference . && popd >/dev/null
-if [ -f ${STAGING_DIR}/sprint} ] ; then chmod -R u+w ${STAGING_DIR}/sprint; fi
-rm -rf ${STAGING_DIR}/sprint
+pushd contrib-workspace >/dev/null && tar -cJf ../contrib-workspace.tar.xz --dereference . && popd >/dev/null
+if [ -f ${STAGING_DIR}/contrib-workspace} ] ; then chmod -R u+w ${STAGING_DIR}/contrib-workspace; fi
+rm -rf ${STAGING_DIR}/contrib-workspace
 
 cd ${STAGING_DIR_BASE}
 if [ "$INSTALL" != "n" ] ; then
@@ -157,13 +157,13 @@ if [ "$INSTALL" != "n" ] ; then
 fi
 if [ -f ${STAGING_DIR_NAME}/installs ]; then chmod -R u+w ${STAGING_DIR_NAME}/installs; fi
 rm -rf ${STAGING_DIR_NAME}/installs
-echo "Creating sprint package..."
-tar -cf - ${STAGING_DIR_NAME} | gzip -9 > drupal_sprint_package.${QUICKSPRINT_RELEASE}.tar.gz
-zip -9 -r -q drupal_sprint_package.${QUICKSPRINT_RELEASE}.zip ${STAGING_DIR_NAME}
+echo "Creating contrib package..."
+tar -cf - ${STAGING_DIR_NAME} | gzip -9 > drupal_contrib_package.${QUICKSPRINT_RELEASE}.tar.gz
+zip -9 -r -q drupal_contrib_package.${QUICKSPRINT_RELEASE}.zip ${STAGING_DIR_NAME}
 
-packages=$(ls ${STAGING_DIR_BASE}/drupal_sprint_package*${QUICKSPRINT_RELEASE}*)
+packages=$(ls ${STAGING_DIR_BASE}/drupal_contrib_package*${QUICKSPRINT_RELEASE}*)
 printf "${GREEN}####
-# The built sprint tarballs and optional install tarballs are now in ${YELLOW}$STAGING_DIR_BASE${GREEN}:
+# The built contrib tarballs and optional install tarballs are now in ${YELLOW}$STAGING_DIR_BASE${GREEN}:
 # ${packages:-}
 #
 # Package is built, staging directory remains in ${STAGING_DIR}.

@@ -14,13 +14,13 @@ YELLOW='\033[33m'
 RESET='\033[0m'
 OS=$(uname)
 TIMESTAMP=$(date +"%Y%m%d-%H%M")
-SPRINTNAME="sprint-${TIMESTAMP}"
+SPRINTNAME="contrib-${TIMESTAMP}"
 echo ${SPRINTNAME} > .test_sprint_name.txt
 
-# Extract a new ddev D9 core instance to $CWD/sprint-$TIMESTAMP
+# Extract a new ddev D9 core instance to $CWD/contrib-$TIMESTAMP
 mkdir -p ${SPRINTNAME}
-echo "Untarring sprint.tar.xz" >&2
-tar -xpf sprint.tar.xz -C ${SPRINTNAME}
+echo "Untarring contrib-workspace.tar.xz" >&2
+tar -xpf contrib-workspace.tar.xz -C ${SPRINTNAME}
 
 # Check Docker is running
 if docker run --rm -t busybox:latest ls >/dev/null
@@ -37,6 +37,7 @@ printf "${YELLOW}Configuring your fresh Drupal instance. This takes a few minute
 
 cd "${SPRINTNAME}/drupalpod"
 ddev config --project-name="${SPRINTNAME}"
+ddev config --update
 
 # DrupalPod hacks.
 sed 's#time composer#time ddev composer#g' .gitpod/drupal/drupalpod-setup/drupal_setup_core.sh > .gitpod/drupal/drupalpod-setup/drupal_setup_core.sh.new
@@ -60,13 +61,13 @@ ${GREEN}
 ####
 # Use the following URL's to access your site:
 #
-# Website:    ${YELLOW}http://sprint-${TIMESTAMP}.ddev.site:8080/${GREEN}
-#             ${YELLOW}https://sprint-${TIMESTAMP}.ddev.site:8443/${GREEN}
+# Website:    ${YELLOW}http://contrib-${TIMESTAMP}.ddev.site:8080/${GREEN}
+#             ${YELLOW}https://contrib-${TIMESTAMP}.ddev.site:8443/${GREEN}
 #             ${YELLOW}(U:admin  P:admin)${GREEN}
 #
-# ${GREEN}Mailhog:    ${YELLOW}http://sprint-${TIMESTAMP}.ddev.site:8025/${GREEN}
+# ${GREEN}Mailhog:    ${YELLOW}http://contrib-${TIMESTAMP}.ddev.site:8025/${GREEN}
 #
-# phpMyAdmin: ${YELLOW}http://sprint-${TIMESTAMP}.ddev.site:8036/${GREEN}
+# phpMyAdmin: ${YELLOW}http://contrib-${TIMESTAMP}.ddev.site:8036/${GREEN}
 #
 # Chat:       ${YELLOW}https://drupal.org/chat to join Drupal Slack or https://drupalchat.me${GREEN}
 #

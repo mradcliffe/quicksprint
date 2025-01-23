@@ -39,7 +39,7 @@ ${GREEN}
 #
 # It does the following:
 #  -Install the DDEV-Local development tool
-#  -Copy required components to ~/sprint
+#  -Copy required components to ~/contrib-workspace
 #  -Pre-loads docker images for the toolkit:
 #
 ####
@@ -124,9 +124,9 @@ if ! command -v ddev >/dev/null && [[ "$OS" =~ "MINGW64" ]] ; then
     printf "${GREEN}Installed ddev using the ddev_windows_installer. It may not be in your PATH until you open a new window.${RESET}\n"
 fi
 
-mkdir -p ~/sprint
-cp start_sprint.sh ~/sprint
-cp sprint.tar.xz ~/sprint
+mkdir -p ~/contrib-workspace
+cp start.sh ~/contrib-workspace
+cp contrib-workspace.tar.xz ~/contrib-workspace
 
 printf "
 ${GREEN}
@@ -139,8 +139,8 @@ ${GREEN}
 # IN A NEW WINDOW:
 #
 # ${YELLOW}mkcert -install${GREEN}
-# ${YELLOW}cd ~/sprint${GREEN}
-# ${YELLOW}./start_sprint.sh${GREEN}
+# ${YELLOW}cd ~/contrib-workspace${GREEN}
+# ${YELLOW}./start.sh${GREEN}
 #
 ######
 ${RESET}

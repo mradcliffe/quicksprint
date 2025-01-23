@@ -4,15 +4,15 @@ Quicksprint is a basic toolkit to get people started with ddev and a Drupal code
 
 There are two parts to this project:
 
-1. A build of the tarball that a contribution event attendee needs (done by a maintainer using Linux or Mac OS, who should be reading this right now). The maintainer uses `package_drupal_script.sh` to create a tarball/zipball for sprint attendees to use.
+1. A build of the tarball that a contribution event attendee needs (done by a maintainer using Linux or Mac OS, who should be reading this right now). The maintainer uses `package_drupal_script.sh` to create a tarball/zipball for contributors to use.
 2. A released tarball/zipball that has everything ready for an ordinary contributor to get set up fast. It includes a README.md to help them know what to do.
 
 
-## Distributing a Sprint Package
+## Distributing a Contribution Package
 
-There are several ways to distribute your package such as through a peer-to-peer tool such as ResilioSync, USB flash drives or downloading from the releases page. This will depend on the size of your sprint.
+There are several ways to distribute your package such as through a peer-to-peer tool such as ResilioSync, USB flash drives or downloading from the releases page. This will depend on the size of your contribution event.
 
-You must provide both the contents of the `drupal_sprint_package` *and* the `installs` tarball. (The installs package grew too big for github releases.)
+You must provide both the contents of the `drupal_contrib_package` *and* the `installs` tarball. (The installs package grew too big for github releases.)
 
 Method      | Sprint Size | Bandwidth | Other Considerations
 ----------  | ----------- | --------- | ----------------------
@@ -29,17 +29,17 @@ There are some better tools to automate USB flash drive imaging, but your mileag
     * (MacOS only) Remove hidden directories added by Spotlight and Finder.
 3. Determine the total file size used on the device: `du /path/to/volume` so you know what the count parameter should be in the dd command below.
     * **⚠️ Warning** If you are _overwriting_ an existing package on a flash drive then this number **must** be greater than the previous size!
-4. Create a disk image using `dd if=/dev/DEVICE` of=~/sprint-package.img bs=1m count=2700`.
+4. Create a disk image using `dd if=/dev/DEVICE` of=~/contrib-package.img bs=1m count=2700`.
     * (MacOS only) Check the disk device with `diskutil list`.
 5. Eject/Umount  the flash drive.
 6. Insert a new flash drive.
     * (MacOS/Automount only) Unmount the flash drive if automounted - `diskutil unmount /dev/DEVICE`.
 7. Reformat the flash drive (if the flash drive has files greater than the size of the disk image).
-8. Write the image to the flash drive using `dd if=~/sprint-package.img of=/dew/DEVICE bs=1m`.
+8. Write the image to the flash drive using `dd if=~/contrib-package.img of=/dev/DEVICE bs=1m`.
 9. Eject and repeat 6. as necessary.
 
 ### Using your Sprint Package
 
 * Your users will download and unarchive the tarball or zipball.
 * Run install.sh from the unarchived directory; (Windows users must work in git-bash).
-* After installation, users can start up an instance by cd-ing to ~/sprint and running ./start_sprint.sh. 
+* After installation, users can start up an instance by cd-ing to ~/contrib-workspace and running ./start.sh. 
